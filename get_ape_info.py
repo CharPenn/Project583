@@ -15,7 +15,7 @@ with open('ape_abi.json', 'r') as f:
 
 ############################
 # Connect to an Ethereum node
-api_url = ""  # YOU WILL NEED TO PROVIDE THE URL OF AN ETHEREUM NODE
+api_url = "https://eth-mainnet.g.alchemy.com/v2/sNcHYYIrLSn_sZB0r7S5t"  # YOU WILL NEED TO PROVIDE THE URL OF AN ETHEREUM NODE
 provider = HTTPProvider(api_url)
 web3 = Web3(provider)
 
@@ -28,6 +28,18 @@ def get_ape_info(ape_id):
     data = {'owner': "", 'image': "", 'eyes': ""}
 
     # YOUR CODE HERE
+    contract = web3.eth.contract(address=contract_address, abi=abi)
+
+    data['owner'] = contract.functions.ownerOf(ape_id).call()
+    data['image'] = contract.functions.tokenURI(ape_id).call()
+
+    ipfs_url = f"https://gateway.pinata.cloud/ipfs/{data['image'].split('://')[-1]}"
+    response = requests.get(ipfs_url)
+    attributes = response.json().get('attributes', [])
+    for val in attributes:
+        if val.get('trait_type') == 'Eyes':
+            data['eyes'] = val.get('value', "")
+            break   
 
     assert isinstance(data, dict), f'get_ape_info{ape_id} should return a dict'
     assert all([a in data.keys() for a in
