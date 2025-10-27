@@ -33,10 +33,10 @@ def get_ape_info(ape_id):
 
     data['owner'] = contract.functions.ownerOf(ape_id).call()
     token_uri = contract.functions.tokenURI(ape_id).call()
-    data['image'] = token_uri.removesuffix(f'/{ape_id}')
-
     ipfs_url = f"https://gateway.pinata.cloud/ipfs/{token_uri.split('://')[-1]}"
     response = requests.get(ipfs_url)
+
+    data['image'] = response.json().get('image', "")
     attributes = response.json().get('attributes', [])
     for val in attributes:
         if val.get('trait_type') == 'Eyes':
