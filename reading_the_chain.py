@@ -113,7 +113,7 @@ if __name__ == "__main__":
 	n = 5
 	for _ in range(n):
 		block_num = random.randint(1, latest_block)
-		ordered = is_ordered_block(block_num)
+		ordered = is_ordered_block(cont_w3, block_num)
 		if ordered:
 			print(f"Block {block_num} is ordered")
 		else:
