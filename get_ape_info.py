@@ -31,9 +31,10 @@ def get_ape_info(ape_id):
     contract = web3.eth.contract(address=contract_address, abi=abi)
 
     data['owner'] = contract.functions.ownerOf(ape_id).call()
-    data['image'] = contract.functions.tokenURI(ape_id).call()
+    token_uri = contract.functions.tokenURI(ape_id).call()
+    data['image'] = token_uri.removesuffix(f'/{ape_id}')
 
-    ipfs_url = f"https://gateway.pinata.cloud/ipfs/{data['image'].split('://')[-1]}"
+    ipfs_url = f"https://gateway.pinata.cloud/ipfs/{token_uri.split('://')[-1]}"
     response = requests.get(ipfs_url)
     attributes = response.json().get('attributes', [])
     for val in attributes:
